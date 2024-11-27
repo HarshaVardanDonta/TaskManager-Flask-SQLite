@@ -14,7 +14,7 @@ cw_logs = boto3.client('logs', config=Config(region_name='eu-north-1'))
 log_group_name = 'TaskManager-Flask-SQLite-Logs'
 log_stream_name = 'flask-app-logs'
 
-logging.basicConfig(filename='/home/ec2-user/TaskManager-Flask-SQLite/flask_app.log',
+logging.basicConfig(filename='/home/ec2-user/TaskManager-Flask-SQLite/gunicorn_output.log',
                     level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
