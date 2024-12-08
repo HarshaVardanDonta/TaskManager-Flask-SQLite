@@ -22,7 +22,7 @@ def save_tasks():
 @app.route('/')
 def home():
     logger.info('rendered html page')
-    return 'Task Manager - Use the API to manage tasks'
+    return render_template('index.html')
 
 # Add a new task
 @app.route('/tasks', methods=['POST'])
