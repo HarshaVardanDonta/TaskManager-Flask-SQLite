@@ -22,6 +22,7 @@ def query_db(query, args=(), one=False):
     #create a db in project dir
     try:
         conn = sqlite3.connect('tasks.db')
+        conn.execute('PRAGMA journal_mode=WAL') 
         cur = conn.cursor()
         cur.execute('''
             CREATE TABLE IF NOT EXISTS tasks (
