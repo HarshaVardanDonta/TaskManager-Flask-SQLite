@@ -98,21 +98,20 @@
     }
 
     // Add a new task
-   addTaskForm.addEventListener('submit', event => {
-  event.preventDefault();
-  const taskName = document.getElementById('taskName').value;
-  const taskDescription = document.getElementById('taskDescription').value;
-  
-  fetch('/tasks', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: taskName, description: taskDescription })
-  }).then(response => response.json())  // Make sure to handle the JSON response
-    .then(() => {
-      fetchTasks();  // Fetch and update tasks immediately
-      addTaskForm.reset();  // Reset the form
+    addTaskForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const taskName = document.getElementById('taskName').value;
+      const taskDescription = document.getElementById('taskDescription').value;
+      fetch('/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: taskName, description: taskDescription })
+      }).then(() => {
+        fetchTasks();
+        addTaskForm.reset();
+      });
     });
-});
+
     // Delete a task
     function deleteTask(taskId) {
       fetch(`/tasks/${taskId}`, { method: 'DELETE' })
