@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,18 +12,21 @@
       padding: 20px;
       font-family: Arial, sans-serif;
     }
+
     .task-table {
       margin-top: 20px;
     }
+
     .edit-form {
       display: none;
       margin-top: 20px;
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1 class="text-center">Task Manager test</h1>
+    <h1 class="text-center">Task Manager</h1>
     <form id="addTaskForm" class="mt-3">
       <div class="mb-3">
         <label for="taskName" class="form-label">Task Name</label>
@@ -73,7 +77,7 @@
 
     // Fetch tasks and display them
     function fetchTasks() {
-      fetch('/tasks')
+      fetch('/tasks1')
         .then(response => response.json())
         .then(tasks => {
           taskTableBody.innerHTML = '';
@@ -98,7 +102,7 @@
       event.preventDefault();
       const taskName = document.getElementById('taskName').value;
       const taskDescription = document.getElementById('taskDescription').value;
-      fetch('/tasks', {
+      fetch('/tasks1', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: taskName, description: taskDescription })
@@ -110,7 +114,7 @@
 
     // Delete a task
     function deleteTask(taskId) {
-      fetch(`/tasks/${taskId}`, { method: 'DELETE' })
+      fetch(`/tasks1/${taskId}`, { method: 'DELETE' })
         .then(() => fetchTasks());
     }
 
@@ -125,7 +129,7 @@
     // Update the task
     editTaskForm.addEventListener('submit', event => {
       event.preventDefault();
-      fetch(`/tasks/${editingTaskId}`, {
+      fetch(`/tasks1/${editingTaskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -149,4 +153,5 @@
     fetchTasks();
   </script>
 </body>
+
 </html>
