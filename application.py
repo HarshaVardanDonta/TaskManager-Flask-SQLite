@@ -22,9 +22,14 @@ app = Flask(__name__)
 # Helper function to load tasks from the file
 def load_tasks():
     if not os.path.exists(TASKS_FILE):
-        return []
-    with open(TASKS_FILE, 'r') as f:
-        return json.load(f)
+        return []  # Return an empty list if the file doesn't exist
+    
+    try:
+        with open(TASKS_FILE, 'r') as f:
+            return json.load(f)  # Try to load JSON data from the file
+    except (json.JSONDecodeError, ValueError):
+        # If there's an error (e.g., file is empty or contains invalid JSON)
+        return []  # Return an empty list if JSON is invalid
 
 # Helper function to save tasks to the file
 def save_tasks(tasks):
