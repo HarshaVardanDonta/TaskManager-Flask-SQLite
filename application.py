@@ -3,7 +3,6 @@ import sqlite3
 import logging
 import boto3
 from botocore.config import Config
-import os
 
 
 # Configure logging
@@ -20,7 +19,7 @@ app = Flask(__name__)
 
 # Helper function to interact with the database
 def query_db(query, args=(), one=False):
-    conn = sqlite3.connect('tasks1.db', timeout=10)
+    conn = sqlite3.connect('tasks1.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur.execute(query, args)
