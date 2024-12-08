@@ -1,5 +1,6 @@
 flask
 boto3
 gunicorn
+wheel
 mysql-connector
 mysql-connector-python-rf
