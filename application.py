@@ -21,6 +21,7 @@ app = Flask(__name__)
 def query_db(query, args=(), one=False):
     conn = sqlite3.connect('tasks.db')
     conn.execute('PRAGMA journal_mode=WAL;')  # Enable WAL mode
+    conn = sqlite3.connect('tasks.db', timeout=10)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur.execute(query, args)
