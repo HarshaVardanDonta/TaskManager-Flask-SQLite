@@ -28,17 +28,15 @@ def home():
 @app.route('/tasks', methods=['POST'])
 def add_task():
     logger.info('Received request for /tasks POST method - used to add new task')
-    data = request.json
-    if not data or 'name' not in data:
-        return jsonify({'error': 'Task name is required'}), 400
+    new_task = request.get_json()
+    task_id = len(tasks) + 1  # Assign a new ID based on current list length
     task = {
-        'id': len(tasks) + 1,  # Assigning a new ID based on the list length
-        'name': data['name'],
-        'description': data.get('description', '')
+        'id': task_id,
+        'name': new_task['name'],
+        'description': new_task.get('description', '')
     }
-    tasks.append(task)  # Adding the task to the in-memory list
-    logger.info('Completed request for /tasks POST method - used to add new task')
-    return jsonify({'message': 'Task added', 'task': task}), 201
+    tasks.append(task)
+    return jsonify(tasks)  # Return the updated tasks list
 
 # View all tasks
 @app.route('/tasks', methods=['GET'])
