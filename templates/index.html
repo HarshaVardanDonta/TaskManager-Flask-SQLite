@@ -77,7 +77,7 @@
 
     // Fetch tasks and display them
     function fetchTasks() {
-      fetch('/tasks1')
+      fetch('/tasks')
         .then(response => response.json())
         .then(tasks => {
           taskTableBody.innerHTML = '';
@@ -102,7 +102,7 @@
       event.preventDefault();
       const taskName = document.getElementById('taskName').value;
       const taskDescription = document.getElementById('taskDescription').value;
-      fetch('/tasks1', {
+      fetch('/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: taskName, description: taskDescription })
@@ -114,7 +114,7 @@
 
     // Delete a task
     function deleteTask(taskId) {
-      fetch(`/tasks1/${taskId}`, { method: 'DELETE' })
+      fetch(`/tasks/${taskId}`, { method: 'DELETE' })
         .then(() => fetchTasks());
     }
 
@@ -129,7 +129,7 @@
     // Update the task
     editTaskForm.addEventListener('submit', event => {
       event.preventDefault();
-      fetch(`/tasks1/${editingTaskId}`, {
+      fetch(`/tasks/${editingTaskId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
