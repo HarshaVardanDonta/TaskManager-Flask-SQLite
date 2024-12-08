@@ -19,7 +19,7 @@ app = Flask(__name__)
 
 # Helper function to interact with the database
 def query_db(query, args=(), one=False):
-    conn = sqlite3.connect('tasks.db')
+    conn = sqlite3.connect('/home/ec2-user/TaskManager-Flask-SQLite/tasks.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     cur.execute(query, args)
