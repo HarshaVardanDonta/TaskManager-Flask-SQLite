@@ -19,7 +19,7 @@ log_stream_name = 'flask-app-logs'
 app = Flask(__name__)
 
 # Path for the database
-DB_PATH = '/home/ec2-user/TaskManager-Flask-SQLite/tasks.db'
+DB_PATH = '/home/ec2-user/TaskManager-Flask-SQLite/database/tasks.db'
 
 # Function to initialize the database
 def query_db():
