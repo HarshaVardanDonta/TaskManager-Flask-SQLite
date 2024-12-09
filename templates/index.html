@@ -67,6 +67,7 @@
   </div>
 
   <script>
+    const taskTableBody = document.getElementById('taskTableBody');
     const addTaskForm = document.getElementById('addTaskForm');
     const editTaskForm = document.getElementById('editTaskForm');
     const editTaskName = document.getElementById('editTaskName');
@@ -74,9 +75,26 @@
     const cancelEdit = document.getElementById('cancelEdit');
     let editingTaskId = null;
 
-    // Fetch tasks and reload the page
+    // Fetch tasks and display them
     function fetchTasks() {
-      location.reload(); // Reload the page to fetch and display tasks
+      fetch('/tasks')
+        .then(response => response.json())
+        .then(tasks => {
+          taskTableBody.innerHTML = '';
+          tasks.forEach(task => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${task.id}</td>
+              <td>${task.name}</td>
+              <td>${task.description || ''}</td>
+              <td>
+                <button class="btn btn-warning btn-sm" onclick="editTask(${task.id}, '${task.name}', '${task.description || ''}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
+              </td>
+            `;
+            taskTableBody.appendChild(row);
+          });
+        });
     }
 
     // Add a new task
@@ -88,13 +106,16 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: taskName, description: taskDescription })
-      }).then(() => fetchTasks());
+      }).then(() => {
+        addTaskForm.reset();
+        fetchTasks(); // Fetch tasks after adding
+      });
     });
 
     // Delete a task
     function deleteTask(taskId) {
       fetch(`/tasks/${taskId}`, { method: 'DELETE' })
-        .then(() => fetchTasks());
+        .then(() => fetchTasks()); // Fetch tasks after deletion
     }
 
     // Edit a task
@@ -115,7 +136,11 @@
           name: editTaskName.value,
           description: editTaskDescription.value
         })
-      }).then(() => fetchTasks());
+      }).then(() => {
+        editTaskForm.reset();
+        editTaskForm.style.display = 'none';
+        fetchTasks(); // Fetch tasks after updating
+      });
     });
 
     // Cancel editing
@@ -124,7 +149,7 @@
       editTaskForm.style.display = 'none';
     });
 
-    // Initialize (reloads on load to ensure updated tasks are displayed)
+    // Initialize (fetch tasks on load)
     fetchTasks();
   </script>
 </body>
