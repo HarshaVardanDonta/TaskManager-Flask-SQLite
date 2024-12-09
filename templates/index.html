@@ -144,21 +144,46 @@ addTaskForm.addEventListener('submit', event => {
     }
 
     // Update the task
-    editTaskForm.addEventListener('submit', event => {
-      event.preventDefault();
-      fetch(`/tasks/${editingTaskId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: editTaskName.value,
-          description: editTaskDescription.value
-        })
-      }).then(() => {
-        editTaskForm.reset();
-        editTaskForm.style.display = 'none';
-        fetchTasks(); // Fetch tasks after updating
+// Update the task
+editTaskForm.addEventListener('submit', event => {
+  event.preventDefault();
+  
+  const updatedTask = {
+    name: editTaskName.value,
+    description: editTaskDescription.value
+  };
+
+  fetch(`/tasks/${editingTaskId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updatedTask)
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to update task');
+      }
+      return response.json();
+    })
+    .then(() => {
+      // Update the row in the table directly
+      const rows = taskTableBody.querySelectorAll('tr');
+      rows.forEach(row => {
+        if (row.cells[0].textContent == editingTaskId) {
+          row.cells[1].textContent = updatedTask.name;
+          row.cells[2].textContent = updatedTask.description;
+        }
       });
+
+      // Reset the edit form and hide it
+      editTaskForm.reset();
+      editTaskForm.style.display = 'none';
+    })
+    .catch(error => {
+      console.error(error);
+      alert('Failed to update the task.');
     });
+});
+
 
     // Cancel editing
     cancelEdit.addEventListener('click', () => {
