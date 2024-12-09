@@ -66,134 +66,107 @@
     </form>
   </div>
 
-  <script>
-    const taskTableBody = document.getElementById('taskTableBody');
-    const addTaskForm = document.getElementById('addTaskForm');
-    const editTaskForm = document.getElementById('editTaskForm');
-    const editTaskName = document.getElementById('editTaskName');
-    const editTaskDescription = document.getElementById('editTaskDescription');
-    const cancelEdit = document.getElementById('cancelEdit');
-    let editingTaskId = null;
+ <script>
+  const taskTableBody = document.getElementById('taskTableBody');
+  const addTaskForm = document.getElementById('addTaskForm');
+  const editTaskForm = document.getElementById('editTaskForm');
+  const editTaskName = document.getElementById('editTaskName');
+  const editTaskDescription = document.getElementById('editTaskDescription');
+  const cancelEdit = document.getElementById('cancelEdit');
+  let editingTaskId = null;
 
-    // Fetch tasks and display them
-    function fetchTasks() {
-      fetch('/tasks')
-        .then(response => response.json())
-        .then(tasks => {
-          taskTableBody.innerHTML = '';
-          tasks.forEach(task => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${task.id}</td>
-              <td>${task.name}</td>
-              <td>${task.description || ''}</td>
-              <td>
-                <button class="btn btn-warning btn-sm" onclick="editTask(${task.id}, '${task.name}', '${task.description || ''}')">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
-              </td>
-            `;
-            taskTableBody.appendChild(row);
-          });
-        });
-    }
+  // Helper function to get tasks from localStorage
+  function getTasksFromStorage() {
+    const tasks = localStorage.getItem('tasks');
+    return tasks ? JSON.parse(tasks) : [];
+  }
 
-// Add a new task
-addTaskForm.addEventListener('submit', event => {
-  event.preventDefault();
-  const taskName = document.getElementById('taskName').value;
-  const taskDescription = document.getElementById('taskDescription').value;
+  // Helper function to save tasks to localStorage
+  function saveTasksToStorage(tasks) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
 
-  fetch('/tasks', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: taskName, description: taskDescription })
-  })
-    .then(response => response.json())
-    .then(newTask => {
-      // Directly add the new task to the table
+  // Fetch and display tasks
+  function fetchTasks() {
+    const tasks = getTasksFromStorage();
+    taskTableBody.innerHTML = '';
+    tasks.forEach(task => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td>${newTask.id}</td>
-        <td>${newTask.name}</td>
-        <td>${newTask.description || ''}</td>
+        <td>${task.id}</td>
+        <td>${task.name}</td>
+        <td>${task.description || ''}</td>
         <td>
-          <button class="btn btn-warning btn-sm" onclick="editTask(${newTask.id}, '${newTask.name}', '${newTask.description || ''}')">Edit</button>
-          <button class="btn btn-danger btn-sm" onclick="deleteTask(${newTask.id})">Delete</button>
+          <button class="btn btn-warning btn-sm" onclick="editTask(${task.id}, '${task.name}', '${task.description || ''}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
         </td>
       `;
       taskTableBody.appendChild(row);
-
-      // Reset the form
-      addTaskForm.reset();
     });
-});
+  }
 
+  // Add a new task
+  addTaskForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const taskName = document.getElementById('taskName').value;
+    const taskDescription = document.getElementById('taskDescription').value;
 
-    // Delete a task
-    function deleteTask(taskId) {
-      fetch(`/tasks/${taskId}`, { method: 'DELETE' })
-        .then(() => fetchTasks()); // Fetch tasks after deletion
-    }
+    const tasks = getTasksFromStorage();
+    const newTask = {
+      id: tasks.length ? tasks[tasks.length - 1].id + 1 : 1, // Auto-increment ID
+      name: taskName,
+      description: taskDescription
+    };
 
-    // Edit a task
-    function editTask(taskId, name, description) {
-      editingTaskId = taskId;
-      editTaskName.value = name;
-      editTaskDescription.value = description;
-      editTaskForm.style.display = 'block';
-    }
-
-    // Update the task
-// Update the task
-editTaskForm.addEventListener('submit', event => {
-  event.preventDefault();
-  
-  const updatedTask = {
-    name: editTaskName.value,
-    description: editTaskDescription.value
-  };
-
-  fetch(`/tasks/${editingTaskId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updatedTask)
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
-      return response.json();
-    })
-    .then(() => {
-      // Update the row in the table directly
-      const rows = taskTableBody.querySelectorAll('tr');
-      rows.forEach(row => {
-        if (row.cells[0].textContent == editingTaskId) {
-          row.cells[1].textContent = updatedTask.name;
-          row.cells[2].textContent = updatedTask.description;
-        }
-      });
-
-      // Reset the edit form and hide it
-      editTaskForm.reset();
-      editTaskForm.style.display = 'none';
-    })
-    .catch(error => {
-      console.error(error);
-      alert('Failed to update the task.');
-    });
-});
-
-
-    // Cancel editing
-    cancelEdit.addEventListener('click', () => {
-      editTaskForm.reset();
-      editTaskForm.style.display = 'none';
-    });
-
-    // Initialize (fetch tasks on load)
+    tasks.push(newTask);
+    saveTasksToStorage(tasks);
     fetchTasks();
-  </script>
-</body>
+    addTaskForm.reset();
+  });
 
-</html>
+  // Delete a task
+  function deleteTask(taskId) {
+    const tasks = getTasksFromStorage();
+    const updatedTasks = tasks.filter(task => task.id !== taskId);
+    saveTasksToStorage(updatedTasks);
+    fetchTasks();
+  }
+
+  // Edit a task
+  function editTask(taskId, name, description) {
+    editingTaskId = taskId;
+    editTaskName.value = name;
+    editTaskDescription.value = description;
+    editTaskForm.style.display = 'block';
+  }
+
+  // Update the task
+  editTaskForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const tasks = getTasksFromStorage();
+    const updatedTasks = tasks.map(task => {
+      if (task.id === editingTaskId) {
+        return {
+          ...task,
+          name: editTaskName.value,
+          description: editTaskDescription.value
+        };
+      }
+      return task;
+    });
+
+    saveTasksToStorage(updatedTasks);
+    fetchTasks();
+    editTaskForm.reset();
+    editTaskForm.style.display = 'none';
+  });
+
+  // Cancel editing
+  cancelEdit.addEventListener('click', () => {
+    editTaskForm.reset();
+    editTaskForm.style.display = 'none';
+  });
+
+  // Initialize
+  fetchTasks();
+</script>
