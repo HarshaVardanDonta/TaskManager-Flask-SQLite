@@ -49,15 +49,16 @@ def update_task(task_id):
     if not data or 'name' not in data:
         return jsonify({'error': 'Task name is required'}), 400
 
-    # Find the task by ID and update it
     for task in tasks:
         if task['id'] == task_id:
             task['name'] = data['name']
-            task['description'] = data.get('description', task['description'])
-            logger.info('Completed request for /tasks PUT method - task updated')
-            return jsonify({'message': 'Task updated', 'task': task})
-    logger.warning('Task not found for /tasks PUT method')
+            task['description'] = data.get('description', '')
+            logger.info(f'Updated task: {task}')
+            return jsonify({'message': 'Task updated'})
+
+    logger.error(f'Task with ID {task_id} not found')
     return jsonify({'error': 'Task not found'}), 404
+
 
 # Delete a task
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
