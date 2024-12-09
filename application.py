@@ -3,6 +3,7 @@ import sqlite3
 import logging
 import boto3
 from botocore.config import Config
+import os
 
 
 # Configure logging
