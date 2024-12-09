@@ -67,7 +67,6 @@
   </div>
 
   <script>
-    const taskTableBody = document.getElementById('taskTableBody');
     const addTaskForm = document.getElementById('addTaskForm');
     const editTaskForm = document.getElementById('editTaskForm');
     const editTaskName = document.getElementById('editTaskName');
@@ -75,26 +74,9 @@
     const cancelEdit = document.getElementById('cancelEdit');
     let editingTaskId = null;
 
-    // Fetch tasks and display them
+    // Fetch tasks and reload the page
     function fetchTasks() {
-      fetch('/tasks')
-        .then(response => response.json())
-        .then(tasks => {
-          taskTableBody.innerHTML = '';
-          tasks.forEach(task => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${task.id}</td>
-              <td>${task.name}</td>
-              <td>${task.description || ''}</td>
-              <td>
-                <button class="btn btn-warning btn-sm" onclick="editTask(${task.id}, '${task.name}', '${task.description || ''}')">Edit</button>
-                <button class="btn btn-danger btn-sm" onclick="deleteTask(${task.id})">Delete</button>
-              </td>
-            `;
-            taskTableBody.appendChild(row);
-          });
-        });
+      location.reload(); // Reload the page to fetch and display tasks
     }
 
     // Add a new task
@@ -106,10 +88,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: taskName, description: taskDescription })
-      }).then(() => {
-        fetchTasks();
-        addTaskForm.reset();
-      });
+      }).then(() => fetchTasks());
     });
 
     // Delete a task
@@ -136,11 +115,7 @@
           name: editTaskName.value,
           description: editTaskDescription.value
         })
-      }).then(() => {
-        fetchTasks();
-        editTaskForm.reset();
-        editTaskForm.style.display = 'none';
-      });
+      }).then(() => fetchTasks());
     });
 
     // Cancel editing
@@ -149,7 +124,7 @@
       editTaskForm.style.display = 'none';
     });
 
-    // Initialize
+    // Initialize (reloads on load to ensure updated tasks are displayed)
     fetchTasks();
   </script>
 </body>
