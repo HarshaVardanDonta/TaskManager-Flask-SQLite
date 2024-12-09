@@ -17,16 +17,27 @@ log_stream_name = 'flask-app-logs'
 
 app = Flask(__name__)
 
-# Helper function to interact with the database
-def query_db(query, args=(), one=False):
-    conn = sqlite3.connect('tasks.db')
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    cur.execute(query, args)
-    rv = cur.fetchall()
-    conn.commit()
-    conn.close()
-    return (rv[0] if rv else None) if one else rv
+# Path for the database
+DB_PATH = '/var/lib/jenkins/workspace/FlaskAppPipe/tasks.db'
+
+# Function to initialize the database
+def query_db():
+    if not os.path.exists(DB_PATH):
+        logger.info("Initializing the database.")
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+        cur.execute('''
+            CREATE TABLE IF NOT EXISTS tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT
+            )
+        ''')
+        conn.commit()
+        conn.close()
+        logger.info("Database initialized at %s", DB_PATH)
+    else:
+        logger.info("Database already exists at %s", DB_PATH)
 
 # Serve the frontend
 @app.route('/')
