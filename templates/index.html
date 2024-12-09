@@ -97,20 +97,37 @@
         });
     }
 
-    // Add a new task
-    addTaskForm.addEventListener('submit', event => {
-      event.preventDefault();
-      const taskName = document.getElementById('taskName').value;
-      const taskDescription = document.getElementById('taskDescription').value;
-      fetch('/tasks', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: taskName, description: taskDescription })
-      }).then(() => {
-        addTaskForm.reset();
-        fetchTasks(); // Fetch tasks after adding
-      });
+// Add a new task
+addTaskForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const taskName = document.getElementById('taskName').value;
+  const taskDescription = document.getElementById('taskDescription').value;
+
+  fetch('/tasks', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: taskName, description: taskDescription })
+  })
+    .then(response => response.json())
+    .then(newTask => {
+      // Directly add the new task to the table
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${newTask.id}</td>
+        <td>${newTask.name}</td>
+        <td>${newTask.description || ''}</td>
+        <td>
+          <button class="btn btn-warning btn-sm" onclick="editTask(${newTask.id}, '${newTask.name}', '${newTask.description || ''}')">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteTask(${newTask.id})">Delete</button>
+        </td>
+      `;
+      taskTableBody.appendChild(row);
+
+      // Reset the form
+      addTaskForm.reset();
     });
+});
+
 
     // Delete a task
     function deleteTask(taskId) {
