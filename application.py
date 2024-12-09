@@ -16,23 +16,23 @@ def home():
     logger.info('Rendered HTML page')
     return render_template('index.html')
 
-# Add a new task
+
 @app.route('/tasks', methods=['POST'])
 def add_task():
     logger.info('Received request for /tasks POST method - used to add new task')
     data = request.json
     if not data or 'name' not in data:
         return jsonify({'error': 'Task name is required'}), 400
-
-    # Create a new task and append it to the list
-    task = {
-        'id': len(tasks) + 1,  # Generate a simple unique ID
+    # Create a new task with a unique ID
+    new_task = {
+        'id': len(tasks) + 1,  # Auto-increment ID based on the list length
         'name': data['name'],
         'description': data.get('description', '')
     }
-    tasks.append(task)
-    logger.info('Completed request for /tasks POST method - new task added')
-    return jsonify({'message': 'Task added', 'task': task}), 201
+    tasks.append(new_task)  # Add the task to the in-memory list
+    logger.info('Completed request for /tasks POST method - used to add new task')
+    return jsonify(new_task), 201  # Return the new task
+
 
 # View all tasks
 @app.route('/tasks', methods=['GET'])
